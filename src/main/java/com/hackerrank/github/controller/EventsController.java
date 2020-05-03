@@ -1,6 +1,7 @@
 package com.hackerrank.github.controller;
 
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,17 +10,15 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.hackerrank.github.model.Actor;
 import com.hackerrank.github.model.Event;
-import com.hackerrank.github.model.Repo;
 import com.hackerrank.github.repository.ActorRepository;
 import com.hackerrank.github.repository.EventsRepository;
 import com.hackerrank.github.repository.RepoRepository;
@@ -39,22 +38,19 @@ public class EventsController {
  
 	
 	
-	@PostMapping()
+	@RequestMapping(value = "", method= RequestMethod.POST, consumes = "application/json")
 	@ResponseStatus(HttpStatus.CREATED)
 	public ResponseEntity<Object> saveEvent(@RequestBody Event event) {
 		
 		try {
 				Event createdEvent = new Event(event.getId(), event.getType(), event.getActor(), event.getRepo(), event.getCreatedAt());
-		
-				Repo newRepo = repoRepository.save(createdEvent.getRepo());
-				Actor newActor = actorRepository.save(createdEvent.getActor());
-			
-				List<Repo> repo = repoRepository.findAllById(newRepo.getId());
-				newActor.setRepos(repo);
 				
-				List<Actor> actor = actorRepository.findAllById(newActor.getId());
-				newRepo.setActors(actor);
-		
+				repoRepository.save(createdEvent.getRepo());
+				actorRepository.save(createdEvent.getActor());
+				
+				Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+				createdEvent.setCreatedAt(timestamp);
+						
 					return ResponseEntity.ok(eventsRepository.save(createdEvent));
 		
 		}catch(Exception e) {

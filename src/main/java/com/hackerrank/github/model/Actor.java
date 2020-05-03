@@ -18,10 +18,6 @@ import javax.persistence.ManyToMany;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-
-
-
-
 @Entity
 public class Actor implements Serializable{
 
@@ -39,8 +35,7 @@ public class Actor implements Serializable{
     @JsonIgnore
     private List<Repo> repos = new ArrayList<>();
    
-    public Actor() {
-    }
+    public Actor() {}
 
 
 	public Actor(Long id, String login, String avatar) {

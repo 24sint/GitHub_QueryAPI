@@ -18,6 +18,9 @@ public class Event {
 	@Id 
 	@GeneratedValue(strategy= GenerationType.AUTO)
 	private Long id;
+	private String type;
+   
+    
 	
 		@ManyToOne
 		@JoinColumn(name = "actor_id")
@@ -27,13 +30,9 @@ public class Event {
 		@ManyToOne
 		@JoinColumn(name = "repo_id")
 		
-		private Repo repo;
-	
+		private Repo repo;  
 		
-	
-    private String type;
-    private Timestamp createdAt;
-    
+		 private Timestamp createdAt;
 
     public Event() {
     }
