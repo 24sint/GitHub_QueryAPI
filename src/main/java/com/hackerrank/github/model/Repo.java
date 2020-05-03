@@ -1,11 +1,45 @@
 package com.hackerrank.github.model;
 
-public class Repo {
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+
+
+
+@Entity
+public class Repo implements Serializable{
+	
+	
+	private static final long serialVersionUID = -8489578251865084683L;
+	
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
+	@Column(name="repo_id")
     private Long id;
     private String name;
     private String url;
+    
+  
+    @ManyToMany(cascade=CascadeType.ALL)
+    @JoinTable(name = "repo_actor", joinColumns = @JoinColumn(name = "repo_id"), inverseJoinColumns = @JoinColumn(name = "actor_id"))
+    private List<Actor> actors = new ArrayList<>();
 
-    public Repo() {
+
+	public Repo() {
     }
 
     public Repo(Long id, String name, String url) {
@@ -14,12 +48,17 @@ public class Repo {
         this.url = url;
     }
 
-    public Long getId() {
-        return id;
-    }
 
-    public void setId(Long id) {
-        this.id = id;
+    public List<Actor> getActors() {
+ 		return actors;
+ 	}
+
+ 	public void setActors(List<Actor> actors) {
+ 		this.actors = actors;
+ 	}
+    
+	public Long getId() {
+        return id;
     }
 
     public String getName() {
