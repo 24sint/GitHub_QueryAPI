@@ -3,7 +3,7 @@ package com.hackerrank.github.controller;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,22 +41,27 @@ public class EventsController {
 	
 	@PostMapping()
 	@ResponseStatus(HttpStatus.CREATED)
-	public Event saveEvent(@RequestBody Event event, Object repos ) {
+	public ResponseEntity<Object> saveEvent(@RequestBody Event event) {
 		
-		Event createdEvent = new Event(event.getId(), event.getType(), event.getActor(), event.getRepo(), event.getCreatedAt());
+		try {
+				Event createdEvent = new Event(event.getId(), event.getType(), event.getActor(), event.getRepo(), event.getCreatedAt());
 		
-		Repo newRepo = repoRepository.save(createdEvent.getRepo());
-		Actor newActor = actorRepository.save(createdEvent.getActor());
+				Repo newRepo = repoRepository.save(createdEvent.getRepo());
+				Actor newActor = actorRepository.save(createdEvent.getActor());
+			
+				List<Repo> repo = repoRepository.findAllById(newRepo.getId());
+				newActor.setRepos(repo);
+				
+				List<Actor> actor = actorRepository.findAllById(newActor.getId());
+				newRepo.setActors(actor);
 		
+					return ResponseEntity.ok(eventsRepository.save(createdEvent));
 		
-		List<Repo> repo = repoRepository.findAllById(newRepo.getId());
-		newActor.setRepos(repo);
-		
-		List<Actor> actor = actorRepository.findAllById(newActor.getId());
-		newRepo.setActors(actor);
-		
-	    return  eventsRepository.save(createdEvent);
-		
+		}catch(Exception e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+			
+		}
+			 
 	}
 	
 	@GetMapping("/{id}")
@@ -65,7 +70,7 @@ public class EventsController {
 	
 			Event foundEvent = eventsRepository.findEventById(id);
 			if(foundEvent == null) {
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 				
 			}
 			return ResponseEntity.ok(foundEvent);	
@@ -124,5 +129,4 @@ public class EventsController {
 	public List<Event> getEvent() {
 		return eventsRepository.findAll();
 	}	
-
 }
