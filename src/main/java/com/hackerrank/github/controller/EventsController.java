@@ -18,7 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+
 import com.hackerrank.github.model.Event;
+import com.hackerrank.github.model.Repo;
 import com.hackerrank.github.repository.ActorRepository;
 import com.hackerrank.github.repository.EventsRepository;
 import com.hackerrank.github.repository.RepoRepository;
@@ -39,29 +41,32 @@ public class EventsController {
 	
 	
 	@RequestMapping(value = "", method= RequestMethod.POST, consumes = "application/json")
-	@ResponseStatus(HttpStatus.CREATED)
 	public ResponseEntity<Object> saveEvent(@RequestBody Event event) {
-		
-		try {
+			Event foundEvent = eventsRepository.findEventById(event.getId());
+			
+			if(foundEvent == null) {
+				repoRepository.save(event.getRepo());
+				actorRepository.save(event.getActor());
 				Event createdEvent = new Event(event.getId(), event.getType(), event.getActor(), event.getRepo(), event.getCreatedAt());
 				
-				repoRepository.save(createdEvent.getRepo());
-				actorRepository.save(createdEvent.getActor());
 				
 				Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 				createdEvent.setCreatedAt(timestamp);
-						
-					return ResponseEntity.ok(eventsRepository.save(createdEvent));
-		
-		}catch(Exception e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-			
-		}
-			 
+				
+				Event newEvent = eventsRepository.save(createdEvent);
+				
+					return ResponseEntity.status(HttpStatus.CREATED).body(newEvent);
+				
+					
+					
+			}else {		
+					
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+					
+			}
 	}
 	
 	@GetMapping("/{id}")
-	@ResponseStatus(HttpStatus.OK)
 	public ResponseEntity<Object> getEventById(@PathVariable Long id) {
 	
 			Event foundEvent = eventsRepository.findEventById(id);
@@ -74,51 +79,60 @@ public class EventsController {
 		}
 		
 	@GetMapping("/repos/{repoID}/actors/{actorID}")
-	@ResponseStatus(HttpStatus.OK)
 	public ResponseEntity<List<Event>> getEventByRepoAndActorId(@PathVariable("repoID") Long repoID, @PathVariable("actorID") Long actorID) {
+		
 		List<Event> allEvents =  eventsRepository.findAll();
-		List<Event> feachedEvent = new ArrayList<>();
-		for(Event num : allEvents) {
-			if(num.getActor().getId()== actorID && num.getRepo().getId()==repoID ) {
-				feachedEvent.add(num);
-			}else{
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-			}
-			
-		}
-		return ResponseEntity.ok(feachedEvent);	
+		List<Event> feachedEvent = new ArrayList<Event>();
+		
+		for(Event eve : allEvents) {
+			if( eve.getActor().getId()== actorID && eve.getRepo().getId()==repoID) {
+				
+				feachedEvent.add(eve);		
+			}		
 	}
+		if(feachedEvent.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+		}
+		return ResponseEntity.ok(feachedEvent);
+		
+}
 	
 	@GetMapping("/repos/{repoID}")
-	@ResponseStatus(HttpStatus.OK)
 	public ResponseEntity<List<Event>> getEventByRepoId(@PathVariable Long repoID) {
-		List<Event> allEvents =  eventsRepository.findAll();
-		List<Event> feachedEvent = new ArrayList<>();
-		for(Event num : allEvents) {
-			if( num.getRepo().getId()==repoID ) {
-				feachedEvent.add(num);
-			}else{
+		
+			List<Event> allEvents =  eventsRepository.findAll();
+			List<Event> feachedEvent = new ArrayList<Event>();
+			
+			for(Event eve : allEvents) {
+				if( eve.getRepo().getId().equals(repoID)) {
+					
+					feachedEvent.add(eve);		
+				}		
+		}
+			if(feachedEvent.isEmpty()) {
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 			}
+			return ResponseEntity.ok(feachedEvent);
 			
-		}
-		return ResponseEntity.ok(feachedEvent);	
 	}
+	
 	@GetMapping("/actors/{actorID}")
-	@ResponseStatus(HttpStatus.OK)
 	public ResponseEntity<List<Event>> getEventByActorId(@PathVariable Long actorID) {
 		List<Event> allEvents =  eventsRepository.findAll();
-		List<Event> feachedEvent = new ArrayList<>();
-		for(Event num : allEvents) {
-			if( num.getActor().getId()==actorID ) {
-				feachedEvent.add(num);
-			}else{
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-			}	
-			
-		}
-		return ResponseEntity.ok(feachedEvent);	
+		List<Event> feachedEvent = new ArrayList<Event>();
+		
+		for(Event eve : allEvents) {
+			if( eve.getActor().getId().equals(actorID)) {
+				
+				feachedEvent.add(eve);		
+			}		
 	}
+		if(feachedEvent.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+		}
+		return ResponseEntity.ok(feachedEvent);
+		
+}
 
 	@GetMapping()
 	@ResponseStatus(HttpStatus.OK)

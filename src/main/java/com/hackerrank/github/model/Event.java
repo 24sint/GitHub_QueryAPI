@@ -16,7 +16,7 @@ import javax.persistence.ManyToOne;
 public class Event {
    
 	@Id 
-	@GeneratedValue(strategy= GenerationType.AUTO)
+	//@GeneratedValue(strategy= GenerationType.IDENTITY)
 	private Long id;
 	private String type;
    
@@ -38,7 +38,7 @@ public class Event {
     }
 
     public Event(Long id, String type, Actor actor, Repo repo, Timestamp createdAt) {
-    	super();
+  
         this.id = id;
         this.type = type;
         this.actor = actor;

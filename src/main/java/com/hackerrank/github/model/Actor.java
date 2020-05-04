@@ -24,11 +24,11 @@ public class Actor implements Serializable{
 	private static final long serialVersionUID = 8365699840450167067L;
 	
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+//	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="actor_id")
     private Long id;
     private String login;
-    private String avatar;
+    private String avatar_url;
     
     @ManyToMany(cascade=CascadeType.ALL)
 	@JoinTable(name = "actor_repo", joinColumns = @JoinColumn(name = "actor_id"), inverseJoinColumns = @JoinColumn(name = "repo_id"))
@@ -38,11 +38,11 @@ public class Actor implements Serializable{
     public Actor() {}
 
 
-	public Actor(Long id, String login, String avatar) {
+	public Actor(Long id, String login, String avatar_url) {
 		
         this.id = id;
         this.login = login;
-        this.avatar = avatar;
+        this.avatar_url = avatar_url;
     }
     
     public Long getId() {
@@ -61,12 +61,12 @@ public class Actor implements Serializable{
         this.login = login;
     }
     
-    public String getAvatar() {
-        return avatar;
+    public String getavatar_url() {
+        return avatar_url;
     }
     
-    public void setAvatar(String avatar) {
-        this.avatar =avatar;
+    public void setavatar_url(String avatar_url) {
+        this.avatar_url =avatar_url;
     }
 
     public List<Repo> getRepos() {

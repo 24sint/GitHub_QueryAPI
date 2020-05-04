@@ -15,7 +15,7 @@ public class Repo implements Serializable{
 	private static final long serialVersionUID = -8489578251865084683L;
 	
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	//@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="repo_id")
     private Long id;
     private String name;
